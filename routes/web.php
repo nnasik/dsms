@@ -22,7 +22,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/', 'ProfileController@profile')->name('Profile');
     Route::get('/home', 'ProfileController@profile')->name('Profile');
     Route::get('/profile', 'ProfileController@profile')->name('Profile');
-
+    // Profile Actions
     Route::post('/profile/update', 'ProfileController@updateProfile');
     Route::post('/profile/updatedp', 'ProfileController@updateDP');
     Route::post('/profile/updatesign', 'ProfileController@updateSign');
