@@ -4,19 +4,19 @@
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-9">
-            <h1 class="m-0">Advance Program - {{$advance_program->month_name}} {{$advance_program->year}} </h1>
-          </div><!-- /.col -->
-          <div class="col-sm-3">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="/ap">Advance Program</a></li>
-              <li class="breadcrumb-item active">Footer</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-9">
+                    <h1 class="m-0">Advance Program - {{$advance_program->month_name}} {{$advance_program->year}} </h1>
+                </div><!-- /.col -->
+                <div class="col-sm-3">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="/ap">Advance Program</a></li>
+                        <li class="breadcrumb-item active">Footer</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
 
@@ -26,14 +26,15 @@
             <div class="row">
                 <!-- left column -->
                 <div class="col-md-12">
-                <!-- general form elements -->
+                    <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title p-0">
-                            <a href="/ap/header/{{$advance_program->id}}" class="btn btn-light text-dark">
-                                <i class="fa fa-angle-left"></i>
-                            </a>  
-                               Footer Details (3/5)</h3>
+                                <a href="/ap/header/{{$advance_program->id}}" class="btn btn-light text-dark">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+                                   Footer Details (3/5)
+                            </h3>
                             <a href="/ap/table/{{$advance_program->id}}" class="text-light float-right border rounded p-1">Table <i class="fas fa-angle-right"></i></a>
                         </div>
                         <!-- /.card-header -->
@@ -54,44 +55,43 @@
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <!--<Tab - Format 1>-->
-                                @include('cms.advanceprogram.footer.format1')
+                                @include('cms.advanceprogram.new.footer.format1')
                                 <!--<Tab - Format 2>-->
-                                @include('cms.advanceprogram.footer.format2')
+                                @include('cms.advanceprogram.new.footer.format2')
                                 <!--<Tab - Format 3>-->
                                 <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
                                 <!--</Tab - Format 3>-->
                             </div>
                             <script>
-                            function footerText(){
-                                if($('#show_footer').prop('checked') && $('#footer').val()==''){
-                                    $('#footer').val('Submitted for your approval please.');
+                                function footerText() {
+                                    if ($('#show_footer').prop('checked') && $('#footer').val() == '') {
+                                        $('#footer').val('Submitted for your approval please.');
+                                    }
                                 }
-                            }
 
-                            function signText(){
-                                if($('#show_sign').prop('checked') && $('#sign').val()==''){
-                                    $('#sign').val('Signature');
+                                function signText() {
+                                    if ($('#show_sign').prop('checked') && $('#sign').val() == '') {
+                                        $('#sign').val('Signature');
+                                    }
                                 }
-                            }
 
-                            function recommendedText(){
-                                if($('#show_recommended').prop('checked') && $('#recommended').val()==''){
-                                    $('#recommended').val('Recommended');
+                                function recommendedText() {
+                                    if ($('#show_recommended').prop('checked') && $('#recommended').val() == '') {
+                                        $('#recommended').val('Recommended');
+                                    }
                                 }
-                            }
 
-                            function approvalText(){
-                                if($('#show_approval').prop('checked') && $('#approval').val()==''){
-                                    $('#approval').val('Approved / Not Approved');
+                                function approvalText() {
+                                    if ($('#show_approval').prop('checked') && $('#approval').val() == '') {
+                                        $('#approval').val('Approved / Not Approved');
+                                    }
                                 }
-                            }
-
                             </script>
+                        </div>
                     </div>
                 </div>
+                <!-- /.card -->
             </div>
-            <!-- /.card -->
-        </div>
-    </section>      
+    </section>
 </div>
 @endsection

@@ -19,21 +19,22 @@
         </div><!-- /.container-fluid -->
     </div>
     <!-- /.content-header -->
-    
+
     <!-- Main content -->
     <section class="content">
         <div class="container-fluid">
             <div class="row">
                 <!-- left column -->
                 <div class="col-md-12">
-                <!-- general form elements -->
+                    <!-- general form elements -->
                     <div class="card card-primary">
                         <div class="card-header">
                             <h3 class="card-title p-0">
-                            <a href="/ap" class="btn btn-light text-dark">
-                                <i class="fa fa-angle-left"></i>
-                            </a>  
-                               Header Details (2/5)</h3>
+                                <a href="/ap" class="btn btn-light text-dark">
+                                    <i class="fa fa-angle-left"></i>
+                                </a>
+                                   Header Details (2/5)
+                            </h3>
                             <a href="/ap/footer/{{$advance_program->id}}" class="text-light float-right border rounded p-1">Footer <i class="fas fa-angle-right"></i></a>
                         </div>
                         <!-- /.card-header -->
@@ -56,9 +57,9 @@
                             </ul>
                             <div class="tab-content" id="myTabContent">
                                 <!--<Tab - Format 1>-->
-                                @include('cms.advanceprogram.header.format1')
+                                @include('cms.advanceprogram.new.header.format1')
                                 <!--<Tab - Format 2>-->
-                                @include('cms.advanceprogram.header.format2')
+                                @include('cms.advanceprogram.new.header.format2')
                                 <!--<Tab - Format 3>-->
                                 <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
                                 <!--</Tab - Format 3>-->
@@ -69,6 +70,6 @@
             </div>
             <!-- /.card -->
         </div>
-    </section>      
+    </section>
 </div>
 @endsection

@@ -1,6 +1,8 @@
 @extends('layouts.cms')
 
 @section('content')
+
+
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -22,41 +24,7 @@
     <section class="content">
         <div class="container-fluid">
             <div class="col-12">
-                @if($advance_program->show_from)
-                <p class="p-1 card-text">
-                    @php
-                    echo nl2br($advance_program->from);
-                    echo "<br>";
-                    if($advance_program->submitted_on){
-                    echo date('Y-m-d',strtotime($advance_program->submitted_on));
-                    }
-                    else{
-                    echo date('Y-m-d');
-                    }
-                    @endphp
-                </p>
-                @endif
-
-                @if($advance_program->show_to)
-                <p class="p-1 card-text">
-                    @php
-                    echo nl2br($advance_program->to);
-                    @endphp
-                </p>
-                @endif
-
-                @if($advance_program->show_through)
-                <p class="p-1 card-text">Through</p>
-                <p class="p-1 card-text">
-                    @php
-                    echo nl2br($advance_program->through);
-                    @endphp
-                </p>
-                @endif
-
-                @if($advance_program->show_heading)
-                <h3 class="m-0 p-3 text-center">{{$advance_program->heading}}</h3>
-                @endif
+                @include('cms.advanceprogram.view.header')
 
                 <div class="card">
                     <!-- /.card-header -->
@@ -65,32 +33,37 @@
                             <thead>
                                 <tr>
                                     @if($advance_program->show_col_date)
-                                    <th>{{$advance_program->col_date}}</th>
+                                    <th class="text-center">{{$advance_program->col_date}}</th>
                                     @endif
                                     @if($advance_program->show_col_day)
-                                    <th>{{$advance_program->col_day}}</th>
+                                    <th class="text-center">{{$advance_program->col_day}}</th>
                                     @endif
                                     @if($advance_program->show_col_time)
-                                    <th>{{$advance_program->col_time}}</th>
+                                    <th class="text-center">{{$advance_program->col_time}}</th>
                                     @endif
                                     @if($advance_program->show_col_nature_of_work)
-                                    <th>{{$advance_program->col_nature_of_work}}</th>
+                                    <th class="text-center">{{$advance_program->col_nature_of_work}}</th>
                                     @endif
                                     @if($advance_program->show_col_working_place)
-                                    <th>{{$advance_program->col_working_place}}</th>
+                                    <th class="text-center">{{$advance_program->col_working_place}}</th>
                                     @endif
                                     @if($advance_program->show_col_beneficiaries)
-                                    <th>{{$advance_program->col_beneficiaries}}</th>
+                                    <th class="text-center">{{$advance_program->col_beneficiaries}}</th>
                                     @endif
                                     @if($advance_program->show_col_field_no)
-                                    <th>{{$advance_program->col_field_no}}</th>
+                                    <th class="text-center">{{$advance_program->col_field_no}}</th>
                                     @endif
                                     @if($advance_program->show_col_target)
-                                    <th>{{$advance_program->col_target}}</th>
+                                    <th class="text-center">{{$advance_program->col_target}}</th>
                                     @endif
                                     @if($advance_program->show_col_km)
-                                    <th>{{$advance_program->col_km}}</th>
+                                    <th class="text-center">{{$advance_program->col_km}}</th>
                                     @endif
+                                    @can('ap.check')
+                                    @if($advance_program->status=='Submitted')
+                                    <th class="text-center">Check</th>
+                                    @endif
+                                    @endcan
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,7 +89,35 @@
                                     <td>{{$day->pivot->working_place}}</td>
                                     @endif
 
+                                    @if($advance_program->status=='Submitted')
+                                    <td class="text-center">
+                                        @if($day->pivot->is_correct===NULL)
+
+                                        @elseif($day->pivot->is_correct==true)
+                                        <i class="fa fa-lg fa-check-circle text-success"></i>
+
+                                        @elseif($day->pivot->is_correct==false)
+                                        <i class="fa fa-lg fa-times-circle text-danger"></i>
+                                        @endif
+
+
+                                        @can('ap.check')
+                                        <div id="check-date-{{$day->pivot->date}}" class="@if(isset($day->pivot->is_correct)) d-none @endif">
+                                            <button class="btn btn btn-success m-1" onclick="checkDate({{$advance_program->id}},'{{$day->pivot->date}}')"><i class="fa fa-check"></i></button>
+                                            <button class="btn btn btn-danger m-1" onclick="addDateNote({{$advance_program->id}},'{{$day->pivot->date}}')"><i class="fa fa-times"></i></button>
+                                        </div>
+                                        @endcan
+
+                                    </td>
+                                    @endif
                                 </tr>
+                                @if(isset($day->pivot->note))
+                                <tr>
+                                    <td colspan="5" class="text-danger" style="background-color:rgba(255,0,0,0.2);">
+                                        Note : {{$day->pivot->note}}
+                                    </td>
+                                </tr>
+                                @endif
                                 @endforeach
                             </tbody>
                         </table>
@@ -124,93 +125,45 @@
                     <!-- /.card-body -->
                 </div>
                 <!-- /.card -->
-
-                @if($advance_program->show_footer_text)
-                <p class="p-1 card-text">{{$advance_program->footer_text}}</p>
-                @endif
-
-                <div class="row p-1">
-                    @if($advance_program->show_sign)
-                    <p class="col-4 p-1 card-text">
-                        ...........................
-                        <br>
-                        {{$advance_program->sign}}
-                    </p>
-                    @endif
-
-                    @if($advance_program->show_recommended)
-                    <p class="col-4 p-1 card-text">
-                        ...........................
-                        <br>
-                        {{$advance_program->recommended}}
-                    </p>
-                    @endif
-
-                    @if($advance_program->show_approval)
-                    <p class="col-4 p-1 card-text">
-                        ...........................
-                        <br>
-                        @php
-                        echo nl2br($advance_program->approval);
-                        @endphp
-                    </p>
-                    @endif
-                </div>
-                @if($advance_program->show_copy_to)
-                <p class="p-0 card-text">
-                    <b>Copy To : </b>{{$advance_program->copy_to}}
-                </p>
-                @endif
+                @include('cms.advanceprogram.view.footer')
             </div>
+            @include('cms.advanceprogram.view.status')
+            @include('cms.advanceprogram.view.action')
 
-            <div class="card card-default color-palette-box mt-3">
-                <div class="card-header">
-                    <h3 class="card-title text-bold">
-                        Actions
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="col-12">
-                        <table>
-                            <tr>
-                                <td>Submit for approval</td>
-                                <td colspan="2">
-                                    <button class="btn btn btn-primary" style="width: 100%;">
-                                        <i class="fa fa-paper-plane"></i>
-                                    </button></td>
-                            </tr>
-                            <tr>
-                                <td>Checked with Calender & Found Correct</td>
-                                <td class="pr-4">
-                                    <button class="btn btn btn-success"><i class="fa fa-check"></i></button>
-                                </td>
-                                <td>
-                                    <button class="btn btn btn-danger"><i class="fa fa-times"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="pr-4">Recommend / Not Recommend Advance Programme</td>
-                                <td>
-                                    <button class="btn btn btn-success"><i class="fa fa-check"></i></button>
-                                </td>
-                                <td>
-                                    <button class="btn btn btn-danger"><i class="fa fa-times"></i></button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Approve / Not Approve Advance Programme</td>
-                                <td>
-                                    <button class="btn btn btn-success"><i class="fa fa-check"></i></button>
-                                </td>
-                                <td>
-                                    <button class="btn btn btn-danger"><i class="fa fa-times"></i></button>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
+
     </section>
+    @include('cms.advanceprogram.view.history')
 </div>
+<script>
+    function checkDate(advance_program_id, ap_date) {
+        $.post("/ap/checkdate", {
+                date: ap_date,
+                ap_id: advance_program_id,
+                _token: '@php echo csrf_token();@endphp'
+            },
 
+            function(data, status) {
+                if (status == 'success') {
+                    $("#check-date-" + data).hide();
+                }
+            });
+    }
+
+    function addDateNote(advance_program_id, ap_date) {
+        var prompt_note = prompt("Note :")
+        $.post("/ap/adddatenote", {
+                date: ap_date,
+                ap_id: advance_program_id,
+                _token: '@php echo csrf_token();@endphp',
+                note: prompt_note
+            },
+
+            function(data, status) {
+                if (status == 'success') {
+                    $("#check-date-" + data).hide();
+                }
+            });
+    }
+</script>
+@include('cms.advanceprogram.modals.not_correct_ap')
 @endsection

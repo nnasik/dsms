@@ -1,30 +1,30 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a href="/" class="brand-link">
-      <img src="{{asset('dist/img/logo.png')}}" alt="AdminLTE Logo" class="brand-image elevation-3">
-      <span class="brand-text font-weight-light">DSMS - KPW</span>
-    </a>
+  <!-- Brand Logo -->
+  <a href="/" class="brand-link">
+    <img src="{{asset('dist/img/logo.png')}}" alt="AdminLTE Logo" class="brand-image elevation-3">
+    <span class="brand-text font-weight-light">DSMS - KPW</span>
+  </a>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
         @if(file_exists('storage/user/dp/'.Auth::user()->profile_pic))
-          <img src="{{asset('storage/user/dp/'.Auth::user()->profile_pic)}}" class="img-circle elevation-2" alt="User Image">
-        @else 
-          <img src="{{asset('storage/user/dp.png')}}" class="img-circle elevation-2" alt="User Image">
+        <img src="{{asset('storage/user/dp/'.Auth::user()->profile_pic)}}" class="img-circle elevation-2" alt="User Image">
+        @else
+        <img src="{{asset('storage/user/dp.png')}}" class="img-circle elevation-2" alt="User Image">
         @endif
-          
-        </div>
-        <div class="info">
-          <a href="/profile" class="d-block">{{Auth::user()->name}}</a>
-        </div>
+
       </div>
+      <div class="info">
+        <a href="/profile" class="d-block">{{Auth::user()->name}}</a>
+      </div>
+    </div>
 
 
-      <!-- SidebarSearch Form -->
-      <!--
+    <!-- SidebarSearch Form -->
+    <!--
       <div class="form-inline">
         <div class="input-group" data-widget="sidebar-search">
           <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
@@ -37,21 +37,21 @@
       </div>
       -->
 
-      <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-          
-          <li class="nav-item">
-            <a href="#" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Dashboard
-              </p>
-            </a>
-          </li>
-          <!--
+
+        <li class="nav-item">
+          <a href="#" class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              Dashboard
+            </p>
+          </a>
+        </li>
+        <!--
           <li class="nav-item">
             <a href="pages/widgets.html" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
@@ -280,100 +280,100 @@
             </ul>
           </li>
           -->
-          <!--
+        <!--
           <li class="nav-header">EXAMPLES</li>
           -->
 
-          @can('mail.mail')
-          <li class="nav-item ">
-            <a href="/mail" class="nav-link {{ request()->is('mail') ? 'active' : '' }}">
-              <i class="nav-icon far fa-envelope"></i>
-              <p>
-                Mail
-              </p>
-            </a>
-          </li>
-          @endcan
+        @can('mail.mail')
+        <li class="nav-item ">
+          <a href="/mail" class="nav-link {{ request()->is('mail') ? 'active' : '' }}">
+            <i class="nav-icon far fa-envelope"></i>
+            <p>
+              Mail
+            </p>
+          </a>
+        </li>
+        @endcan
 
-          <li class="nav-item">
-            <a href="/users" class="nav-link {{ request()->is('employee') ? 'active' : '' }}">
-              <i class="nav-icon fa fa-user-tie"></i>
-              <p>
-                Employee
-              </p>
-            </a>
-          </li>
+        <li class="nav-item">
+          <a href="/users" class="nav-link {{ request()->is('employee') ? 'active' : '' }}">
+            <i class="nav-icon fa fa-user-tie"></i>
+            <p>
+              Employee
+            </p>
+          </a>
+        </li>
 
-          @can('task.task')
-          <li class="nav-item">
-            <a href="/task" class="nav-link {{ request()->is('task') ? 'active' : '' }}">
-              <i class="nav-icon fa fa-list"></i>
-              <p>
-                Task
-              </p>
-            </a>
-          </li>
-          @endcan
+        @can('task.task')
+        <li class="nav-item">
+          <a href="/task" class="nav-link {{ request()->is('task') ? 'active' : '' }}">
+            <i class="nav-icon fa fa-list"></i>
+            <p>
+              Task
+            </p>
+          </a>
+        </li>
+        @endcan
 
-          @can('ap.ap')
-          <li class="nav-item">
-            <a href="/ap" class="nav-link {{ request()->is('ap') ? 'active' : '' }}">
-              <i class="nav-icon far fa-calendar-alt"></i>
-              <p>
-                Advance Program
-                <span class="badge badge-info right bg-warning">2</span>
-              </p>
-            </a>
-          </li>
-          @endcan
+        @can('ap.ap')
+        <li class="nav-item">
+          <a href="/ap" class="nav-link {{ request()->is('ap') ? 'active' : '' }}">
+            <i class="nav-icon far fa-calendar-alt"></i>
+            <p>
+              Advance Program
+              <!--<span class="badge badge-info right bg-warning">2</span>-->
+            </p>
+          </a>
+        </li>
+        @endcan
 
-          @can('calendar.calendar')
-          <li class="nav-item">
-            <a href="/calendar" class="nav-link {{ request()->is('calendar') ? 'active' : '' }}">
-              <i class="nav-icon far fa-calendar"></i>
-              <p>
-                Calendar
-              </p>
-            </a>
-          </li>
-          @endcan
+        @can('calendar.calendar')
+        <li class="nav-item">
+          <a href="/calendar" class="nav-link {{ request()->is('calendar') ? 'active' : '' }}">
+            <i class="nav-icon far fa-calendar"></i>
+            <p>
+              Calendar
+            </p>
+          </a>
+        </li>
+        @endcan
 
-          <li class="nav-item">
-            <a href="/message" class="nav-link {{ request()->is('message') ? 'active' : '' }}">
-              <i class="nav-icon fas fa-comments"></i>
-              <p>
-                Message
-              </p>
-            </a>
-          </li>
+        <li class="nav-item">
+          <a href="/message" class="nav-link {{ request()->is('message') ? 'active' : '' }}">
+            <i class="nav-icon fas fa-comments"></i>
+            <p>
+              Message
+            </p>
+          </a>
+        </li>
 
-          <li class="nav-item">
-            <a href="/users" class="nav-link {{ request()->is('users') ? 'active' : '' }}">
-              <i class="nav-icon fa fa-users"></i>
-              <p>
-                Users
-              </p>
-            </a>
-          </li>
+        <li class="nav-item">
+          <a href="/users" class="nav-link {{ request()->is('users') ? 'active' : '' }}">
+            <i class="nav-icon fa fa-users"></i>
+            <p>
+              Users
+            </p>
+          </a>
+        </li>
 
-          <li class="nav-item">
-            <a href="#" class="nav-link" onclick="$('#form-logout').submit()">
-              <i class="nav-icon fa fa-power-off"></i>
-              <p>
-                Logout
-              </p>
-            </a>
-          </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="$('#form-logout').submit()">
+            <i class="nav-icon fa fa-power-off"></i>
+            <p>
+              Logout
+            </p>
+          </a>
+        </li>
 
-        
 
-          <form id="form-logout" action="{{ route('logout') }}" method="POST" class="nav-item">
-            {{ csrf_field() }}
-          </form>
-         
 
-          
-          <!--
+        <form id="form-logout" action="{{ route('logout') }}" method="POST" class="nav-item">
+          {{ csrf_field() }}
+        </form>
+
+
+
+        <!--
           <li class="nav-item">
             <a href="pages/gallery.html" class="nav-link">
               <i class="nav-icon far fa-image"></i>
@@ -643,7 +643,7 @@
             </ul>
           </li>
           -->
-          <!--
+        <!--
           <li class="nav-header">MISCELLANEOUS</li>
           <li class="nav-item">
             <a href="iframe.html" class="nav-link">
@@ -742,9 +742,9 @@
             </a>
           </li>
           -->
-        </ul>
-      </nav>
-      <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-  </aside>
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>

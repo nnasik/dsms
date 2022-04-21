@@ -7,8 +7,10 @@ use Spatie\Permission\Models\Permission as Permission;
 
 
 class PermissionController extends Controller{
+
     public function createPermissions(){
-        
+
+        /*
         Permission::create(['name'=>'ap.ap']);
         Permission::create(['name'=>'ap.summary']);
         Permission::create(['name'=>'ap.check']);
@@ -26,6 +28,8 @@ class PermissionController extends Controller{
         Permission::create(['name'=>'task.task']);
 
         Permission::create(['name'=>'dashboard.dashboard']);
-
+        */
+        Permission::create(['name'=>'users.users']);
+        Permission::create(['name'=>'users.manage']);
     }
 }

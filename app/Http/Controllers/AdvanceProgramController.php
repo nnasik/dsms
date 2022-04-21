@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AdvanceProgram;
 use App\Models\Calendar;
+use App\Models\Note;
 use Auth;
 use Redirect;
 use Session;
@@ -13,156 +14,85 @@ use Validator;
 
 class AdvanceProgramController extends Controller
 {
-    public function index(){
-        $data['month_name'] = $this->monthName(date('m')); 
-        $data['year'] = date('Y'); 
-        $user_id = Auth::user()->id;
-        $data['my_advance_programs'] = AdvanceProgram::where('user',$user_id)->get()->reverse();
-        return view('cms.advanceprogram.dashboard')->with($data);
-    }
 
-    public function view($id){
-        $user_id = Auth::user()->id;
-        $advanceProgram = AdvanceProgram::where('id',$id)->where('user',$user_id)->first();
-        
-        if ($advanceProgram == NULL) {
-            return redirect('ap/new');
+    public function add(Request $request)
+    {
+        // Cheking for Permission
+        $current_user = Auth::user();
+        if (!$current_user->hasPermissionTo('ap.ap')) {
+            Session::flash('danger', "Access Restricted");
+            return Redirect::back();
         }
 
-        $monthNum  = $advanceProgram->month;
-        $data['days'] = $advanceProgram->days;
-        $advanceProgram['month_name'] = $this->monthName($monthNum);
+        $user_id =  $current_user->id;
 
-        $data['advance_program']=$advanceProgram;
-
-        return view('cms.advanceprogram.view')->with($data);
-    }
-
-    public function new(){
-        return view('cms.advanceprogram.new');
-    }
-
-    public function header($id){
-        $user_id = Auth::user()->id;
-        $data['user_name'] = Auth::user()->name;
-        $data['user_designation'] = Auth::user()->designation;
-        $advanceProgram = AdvanceProgram::where('id',$id)->where('user',$user_id)->where('is_locked',false)->first();
-        
-        if ($advanceProgram == NULL) {
-            return redirect('ap/new');
-        }
-
-        $monthNum  = $advanceProgram->month;
-        $advanceProgram['month_name'] = $this->monthName($monthNum);
-
-        $data['advance_program']=$advanceProgram;
-
-        return view('cms.advanceprogram.header')->with($data);
-    }
-
-    public function footer($id){
-        $user_id = Auth::user()->id;
-        $advanceProgram = AdvanceProgram::where('id',$id)->where('user',$user_id)->where('is_locked',false)->first();
-        
-        if ($advanceProgram == NULL) {
-            return redirect('ap/new');
-        }
-
-        $monthNum  = $advanceProgram->month;
-        $advanceProgram['month_name'] = $this->monthName($monthNum);
-
-        $data['advance_program']=$advanceProgram;
-
-        return view('cms.advanceprogram.footer')->with($data);
-    }
-
-    public function table($id){
-        $user_id = Auth::user()->id;
-        $advanceProgram = AdvanceProgram::where('id',$id)->where('user',$user_id)->where('is_locked',false)->first();
-        
-        if ($advanceProgram == NULL) {
-            return redirect('ap/new');
-        }
-        
-        $monthNum  = $advanceProgram->month;
-        $advanceProgram['month_name'] = $this->monthName($monthNum);
-
-        $data['advance_program']=$advanceProgram;
-        
-
-        return view('cms.advanceprogram.table')->with($data);
-    }
-
-    public function calendar($id){
-        $user_id = Auth::user()->id;
-        $advanceProgram = AdvanceProgram::where('id',$id)->where('user',$user_id)->where('is_locked',false)->first();
-        
-        if ($advanceProgram == NULL) {
-            return redirect('ap/new');
-        }
-        
-        $monthNum  = $advanceProgram->month;
-        $advanceProgram['month_name'] = $this->monthName($monthNum);
-
-        $data['days'] = $advanceProgram->days;
-        $data['advance_program']=$advanceProgram;
-
-        //dd($advanceProgram);
-
-        return view('cms.advanceprogram.calendar')->with($data);
-    }
-
-    public function add(Request $request){
-        $user_id = Auth::user()->id;
-
-        $validator = Validator::make($request->all(),[
-            'year'=>'required',
-            'month' => 'required|unique:advance_programs,month,NULL,NULL,month,'.$request->month.',year,'.$request->year.',user,'.$user_id,
+        // validating request
+        $validator = Validator::make($request->all(), [
+            'year' => 'required',
+            'month' => 'required|unique:advance_programs,month,NULL,NULL,month,' . $request->month . ',year,' . $request->year . ',user,' . $user_id,
         ]);
+
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        // Creating new Advance Program & setting parameters
         $advanceProgram = new AdvanceProgram();
-        $advanceProgram->user = $user_id ;
+        $advanceProgram->user = $user_id;
         $advanceProgram->month = $request->month;
         $advanceProgram->year = $request->year;
         $advanceProgram->status = 'Created';
-        $advanceProgram->is_locked = false;
-
         $advanceProgram->save();
 
 
         // Filling the Pivot Table
-        $date_from = date($advanceProgram->year.'-'.$advanceProgram->month.'-01');
-        $date_to =  date($advanceProgram->year.'-'.$advanceProgram->month.'-t',strtotime(strval($date_from)));
-        $calendar = Calendar::wherebetween('date',[$date_from,$date_to])->get();
+        $date_from = date($advanceProgram->year . '-' . $advanceProgram->month . '-01');
+        $date_to =  date($advanceProgram->year . '-' . $advanceProgram->month . '-t', strtotime(strval($date_from)));
+        $calendar = Calendar::wherebetween('date', [$date_from, $date_to])->get();
 
-        foreach ($calendar as $day){
-            $advanceProgram->days()->attach($day->date,[
-                'user_id'=>$user_id,
-                'day'=>$day->day,
-                'nature_of_work'=>$day->note
+        foreach ($calendar as $day) {
+            $advanceProgram->days()->attach($day->date, [
+                'user_id' => $user_id,
+                'day' => $day->day,
+                'nature_of_work' => $day->note,
+                'note' => null,
+                'is_correct' => null,
+                'checked_on' => null,
+                'checked_by' => null
             ]);
         }
 
         $dateObj   = DateTime::createFromFormat('!m', $request->month);
         $monthName = $dateObj->format('F'); // March
 
-        Session::flash('success','Advance programme successfully created for '.$monthName.' '. $request->year);
+        // Creating Note
+        $note = new Note;
+        $note->user_id = $user_id;
+        $note->body = " Created advance programme for " . $monthName . " " . $advanceProgram->year;
+        $advanceProgram->notes()->save($note);
 
-        return redirect('/ap/header/'.$advanceProgram->id);
+        Session::flash('success', 'Advance programme successfully created for ' . $monthName . ' ' . $request->year);
+
+        return redirect('/ap/header/' . $advanceProgram->id);
     }
 
-    public function update_header(Request $request){
-        $user_id = Auth::user()->id;
-        $imageName=NULL;
+    public function update_header(Request $request)
+    {
+        // Cheking for Permission
+        $current_user = Auth::user();
+        if (!$current_user->hasPermissionTo('ap.ap')) {
+            Session::flash('danger', "Access Restricted");
+            return Redirect::back();
+        }
 
-        $validator = Validator::make($request->all(),[
-            'id'=>'required',
-            'format'=>'required',
-            'logo'=>'mimes:jpeg,jpg,png,gif|max:2048',
+        $user_id = Auth::user()->id;
+        $imageName = NULL;
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'format' => 'required',
+            'logo' => 'mimes:jpeg,jpg,png,gif|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -170,10 +100,10 @@ class AdvanceProgramController extends Controller
         }
 
         // checking the advance program with user id 
-        $advanceProgram = $this->getAP($request->id,$user_id);
+        $advanceProgram = $this->getAPforEdit($request->id, $user_id);
 
         if (isset($request->logo)) {
-            $imageName = $user_id."_".$request->month."_".$request->year.".".$request->logo->extension();
+            $imageName = $user_id . "_" . $request->month . "_" . $request->year . "." . $request->logo->extension();
             $request->logo->storeAs('ap_logo', $imageName);
         }
 
@@ -197,21 +127,33 @@ class AdvanceProgramController extends Controller
         $advanceProgram->show_header_text = isset($request->show_header_text);
         $advanceProgram->header_text = $request->header_text;
 
-        $advanceProgram->status = 'Updated';
-        
         $advanceProgram->save();
 
-        Session::flash('success','Header details updated');
+        // Creating Note
+        $note = new Note;
+        $note->user_id = $user_id;
+        $note->body = "Header informations updated.";
+        $advanceProgram->notes()->save($note);
+
+        Session::flash('success', 'Header details updated');
         return Redirect::back();
     }
 
-    public function update_footer(Request $request){
-        $user_id = Auth::user()->id;
-        $imageName=NULL;
+    public function update_footer(Request $request)
+    {
+        // Cheking for Permission
+        $current_user = Auth::user();
+        if (!$current_user->hasPermissionTo('ap.ap')) {
+            Session::flash('danger', "Access Restricted");
+            return Redirect::back();
+        }
 
-        $validator = Validator::make($request->all(),[
-            'id'=>'required',
-            'format'=>'required',
+        $user_id = Auth::user()->id;
+        $imageName = NULL;
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required',
+            'format' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -219,7 +161,7 @@ class AdvanceProgramController extends Controller
         }
 
         // checking the advance program with user id 
-        $advanceProgram = $this->getAP($request->id,$user_id);
+        $advanceProgram = $this->getAPforEdit($request->id, $user_id);
 
         $advanceProgram->footer_format = $request->format;
 
@@ -235,20 +177,32 @@ class AdvanceProgramController extends Controller
         $advanceProgram->show_copy_to = isset($request->show_copy_to);
         $advanceProgram->copy_to = $request->copy_to;
 
-        $advanceProgram->status = 'Updated';
-        
         $advanceProgram->save();
 
-        Session::flash('success','Footer details updated');
+        // Creating Note
+        $note = new Note;
+        $note->user_id = $user_id;
+        $note->body = "Footer informations updated .";
+        $advanceProgram->notes()->save($note);
+
+        Session::flash('success', 'Footer updated');
         return Redirect::back();
     }
 
-    public function update_table(Request $request){
-        $user_id = Auth::user()->id;
-        $imageName=NULL;
+    public function update_table(Request $request)
+    {
+        // Cheking for Permission
+        $current_user = Auth::user();
+        if (!$current_user->hasPermissionTo('ap.ap')) {
+            Session::flash('danger', "Access Restricted");
+            return Redirect::back();
+        }
 
-        $validator = Validator::make($request->all(),[
-            'id'=>'required'
+        $user_id = $current_user->id;
+        $imageName = NULL;
+
+        $validator = Validator::make($request->all(), [
+            'id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -256,7 +210,7 @@ class AdvanceProgramController extends Controller
         }
 
         // checking the advance program with user id 
-        $advanceProgram = $this->getAP($request->id,$user_id);
+        $advanceProgram = $this->getAPforEdit($request->id, $user_id);
 
         $advanceProgram->show_col_date = isset($request->show_col_date);
         $advanceProgram->show_col_day = isset($request->show_col_day);
@@ -277,21 +231,33 @@ class AdvanceProgramController extends Controller
         $advanceProgram->col_target = $request->col_target;
         $advanceProgram->col_km = $request->col_km;
 
-        $advanceProgram->status = 'Updated';
-        
         $advanceProgram->save();
 
-        Session::flash('success','Table columns updated');
-        return Redirect::back();
 
+        // Creating Note
+        $note = new Note;
+        $note->user_id = $user_id;
+        $note->body = "Updated Table Fields";
+        $advanceProgram->notes()->save($note);
+
+        Session::flash('success', 'Table columns updated.');
+        return Redirect::back();
     }
 
 
-    public function update_calendar(Request $request){
+    public function update_calendar(Request $request)
+    {
+        // Cheking for Permission
+        $current_user = Auth::user();
+        if (!$current_user->hasPermissionTo('ap.ap')) {
+            Session::flash('danger', "Access Restricted");
+            return Redirect::back();
+        }
+
         $user_id = Auth::user()->id;
 
-        $validator = Validator::make($request->all(),[
-            'id'=>'required'
+        $validator = Validator::make($request->all(), [
+            'id' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -299,82 +265,86 @@ class AdvanceProgramController extends Controller
         }
 
         // checking the advance program with user id 
-        $advanceProgram = $this->getAP($request->id,$user_id);
+        $advanceProgram = $this->getAPforEdit($request->id, $user_id);
 
         foreach ($advanceProgram->days as $day) {
 
-            $time=NULL;
-            $nature_of_work=NULL;
-            $working_place=NULL;
-            $beneficiaries=NULL;
-            $field_no=NULL;
-            $target=NULL;
-            $km=NULL;
+            $time = NULL;
+            $nature_of_work = NULL;
+            $working_place = NULL;
+            $beneficiaries = NULL;
+            $field_no = NULL;
+            $target = NULL;
+            $km = NULL;
 
-            if ($request->input('time-'.$day->date)!==NULL){
-                $time=$request->input('time-'.$day->date);
+            if ($request->input('time-' . $day->date) !== NULL) {
+                $time = $request->input('time-' . $day->date);
             }
-            
-           if ($request->input('nature-of-work-'.$day->date)!==NULL){
-                $nature_of_work=$request->input('nature-of-work-'.$day->date);
-           }
-            
-           if ($request->input('place-of-work-'.$day->date)!==NULL) {
-                $working_place=$request->input('place-of-work-'.$day->date);
-           }
 
-           if ($request->input('field_no-'.$day->date)!==NULL) {
-                $field_no=$request->input('field-no-'.$day->date);
-           }
-            
-           if ($request->input('target-'.$day->date)!==NULL) {
-                $target=$request->input('target-'.$day->date);
-           }
+            if ($request->input('nature-of-work-' . $day->date) !== NULL) {
+                $nature_of_work = $request->input('nature-of-work-' . $day->date);
+            }
 
-           if ($request->input('km-'.$day->date)!==NULL) {
-                $km=$request->input('km-'.$day->date);
-           }
+            if ($request->input('place-of-work-' . $day->date) !== NULL) {
+                $working_place = $request->input('place-of-work-' . $day->date);
+            }
+
+            if ($request->input('field_no-' . $day->date) !== NULL) {
+                $field_no = $request->input('field-no-' . $day->date);
+            }
+
+            if ($request->input('target-' . $day->date) !== NULL) {
+                $target = $request->input('target-' . $day->date);
+            }
+
+            if ($request->input('km-' . $day->date) !== NULL) {
+                $km = $request->input('km-' . $day->date);
+            }
 
             $advanceProgram->days()->detach($day->date);
-            
-            $advanceProgram->days()->attach($day->date,[
-                'user_id'=>$user_id,
-                'day'=>$day->day,
-                'time'=>$time,
-                'nature_of_work'=>$nature_of_work,
-                'nature_of_work'=>$nature_of_work,
-                'working_place'=>$working_place,
-                'beneficiaries'=>$beneficiaries,
-                'field_no'=>$field_no,
-                'target'=>$target,
-                'km'=>$km
+
+            $advanceProgram->days()->attach($day->date, [
+                'user_id' => $user_id,
+                'day' => $day->day,
+                'time' => $time,
+                'nature_of_work' => $nature_of_work,
+                'nature_of_work' => $nature_of_work,
+                'working_place' => $working_place,
+                'beneficiaries' => $beneficiaries,
+                'field_no' => $field_no,
+                'target' => $target,
+                'km' => $km
             ]);
-            
+
             //$day->advanceprograms()->detach($advanceProgram->id);
             //$day->advanceprograms()->attach([$advanceProgram->id=>['date'=>$day->date,'user_id'=>$user_id,'nature_of_work'=>$nature_of_work]]);
 
         }
 
-        Session::flash('success','Calendar updated');
+        // Creating Note
+        $note = new Note;
+        $note->user_id = $user_id;
+        $note->body = "Advance programme calendar updated.";
+        $advanceProgram->notes()->save($note);
+
+        Session::flash('success', 'Calendar updated');
         return Redirect::back();
     }
 
-    private function monthName($monthNum){
-        $dateObj = DateTime::createFromFormat('!m', $monthNum);
-        return $dateObj->format('F'); // March
-    }
 
-    private function getAP($ap_id,$user_id){
+
+
+
+    private function getAPforEdit($ap_id, $user_id)
+    {
         // checking the advance program with user id 
-        $advanceProgram = AdvanceProgram::where('id',$ap_id)->where('user',$user_id)->first();
-       
+        $advanceProgram = AdvanceProgram::where('id', $ap_id)->where('user', $user_id)->first();
+
         // cheking status (for unlock)
-        if ($advanceProgram->is_locked==true || $advanceProgram->status=='Submitted') {
-           Session::flash('danger',"Your Advance Programme has been locked & waiting to be reviewed. You can't make any changes after submition.");
-           return redirect()->back();
+        if (!$advanceProgram->status == 'Created' || !$advanceProgram->status == 'Not Correct') {
+            Session::flash('danger', "Your Advance Programme has been already submitted. You can't make any changes after submition.");
+            return redirect()->back();
         }
         return $advanceProgram;
     }
-
-
 }

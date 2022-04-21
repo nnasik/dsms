@@ -49,13 +49,13 @@ class CreateAdvanceProgramsTable extends Migration
 
             $table->boolean('show_designation')->nullable();
             $table->string('designation')->nullable();
-            
+
             $table->boolean('show_district')->nullable();
             $table->string('district')->nullable();
-            
+
             $table->boolean('show_division')->nullable();
             $table->string('division')->nullable();
-            
+
             $table->boolean('show_divisional_secretariat')->nullable();
             $table->string('divisional_secretariat')->nullable();
             //</Header Fields>
@@ -72,21 +72,24 @@ class CreateAdvanceProgramsTable extends Migration
             // </Footer Fields>
 
             // Checked
-            $table->boolean('checked')->nullable();
+            $table->boolean('is_correct')->nullable();
             $table->string('checked_by')->nullable();
+            $table->longText('checked_note')->nullable();
             $table->timestamp('checked_on')->nullable();
-            
+
             // Recommend
-            $table->boolean('show_recommended')->nullable();
-            $table->string('recommended')->nullable();
-            $table->boolean('is_recommended')->nullable();
-            $table->string('recommended_by')->nullable();
-            $table->timestamp('recommended_on')->nullable();
-            
+            $table->boolean('show_recommended')->nullable();                # show/hide recommended/not recommended text
+            $table->string('recommended')->nullable();                      # change the label of recommended/not recommended text
+            $table->boolean('is_recommended')->nullable();                  # recommended/not recommended
+            $table->longText('recommendation_note')->nullable();              # holds note from the recommedation officer
+            $table->string('recommended_by')->nullable();                   # recommended person
+            $table->timestamp('recommended_on')->nullable();                # recommended date & time
+
             // Approval
             $table->boolean('show_approval')->nullable();
             $table->string('approval')->nullable();
             $table->boolean('is_approved')->nullable();
+            $table->longText('approval_note')->nullable();
             $table->string('approved_by')->nullable();
             $table->timestamp('approved_on')->nullable();
 
@@ -114,10 +117,8 @@ class CreateAdvanceProgramsTable extends Migration
             $table->string('header_format')->nullable();
             $table->string('footer_format')->nullable();
             $table->string('status');
-            $table->boolean('is_locked')->nullable();
             $table->datetime('submitted_on')->nullable();
             $table->timestamps();
-
         });
 
         Schema::table('advance_programs', function (Blueprint $table) {
@@ -125,7 +126,7 @@ class CreateAdvanceProgramsTable extends Migration
             $table->foreign('checked_by')->references('id')->on('users');
             $table->foreign('recommended_by')->references('id')->on('users');
             $table->foreign('approved_by')->references('id')->on('users');
-            $table->unique(['user', 'month','year']);
+            $table->unique(['user', 'month', 'year']);
         });
     }
 

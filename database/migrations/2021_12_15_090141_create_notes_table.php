@@ -15,6 +15,10 @@ class CreateNotesTable extends Migration
     {
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
+            $table->longText('body');
+            $table->unsignedBigInteger('notable_id');
+            $table->string('notable_type');
+            $table->string('user_id');
             $table->timestamps();
         });
     }
@@ -24,6 +28,7 @@ class CreateNotesTable extends Migration
      *
      * @return void
      */
+
     public function down()
     {
         Schema::dropIfExists('notes');
