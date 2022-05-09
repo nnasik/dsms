@@ -10,7 +10,7 @@ use Auth;
 use Redirect;
 use Session;
 use DateTime;
-use Validator;
+use PDF;
 
 class AdvanceProgramViewsController extends Controller
 {
@@ -69,6 +69,27 @@ class AdvanceProgramViewsController extends Controller
         $data['advance_program'] = $advanceProgram;
 
         return view('cms.advanceprogram.view')->with($data);
+    }
+
+    public function downloadPDF($id)
+    {
+        // Cheking for Permission
+        $current_user = Auth::user();
+        if (!$current_user->hasPermissionTo('ap.ap')) {
+            Session::flash('danger', "Access Restricted");
+            return Redirect::back();
+        }
+
+        //$advanceProgram = AdvanceProgram::where('id', $id)->where('user', $current_user->id)->where('status', 'Approved')->first();
+        $advance_program  = AdvanceProgram::where('id', $id)->where('status', 'Approved')->first();
+        $days = $advance_program->days;
+        if ($advance_program == NULL) {
+            return redirect('ap/');
+        }
+
+        $pdf = PDF::loadView('cms.advanceprogram.download_pdf', compact('advance_program', 'days'));
+        //$pdf = PDF::loadView('cms.advanceprogram.download_pdf')->with($data);
+        return $pdf->download($advance_program->heading . '.pdf');
     }
 
     public function new()

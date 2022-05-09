@@ -37,6 +37,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/ap/table/{id}', 'AdvanceProgramViewsController@table')->name('Table');
     Route::get('/ap/calendar/{id}', 'AdvanceProgramViewsController@calendar')->name('Calendar');
     Route::get('/ap/view/{id}', 'AdvanceProgramViewsController@view')->name('Advance Programme');
+    Route::get('/ap/download/{id}', 'AdvanceProgramViewsController@downloadPDF')->name('Advance Programme');
 
 
     Route::get('/ap/approved', 'AdvanceProgramViewsController@approvedAPs')->name('Approved Advance Programmes');
@@ -51,6 +52,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/ap/updatefooter', 'AdvanceProgramController@update_footer');
     Route::post('/ap/updatetable', 'AdvanceProgramController@update_table');
     Route::post('/ap/updatecalendar', 'AdvanceProgramController@update_calendar');
+
+
 
     // Advance Program Action Controller
     Route::post('/ap/submit', 'AdvanceProgramActionController@submit');

@@ -30,7 +30,7 @@
                 @if($advance_program->status=='Approved')
                 <div class="row">
                     <div class="col-12 col-lg-8">Download / View</div>
-                    <div class="col-6 col-lg-2"><a class="btn btn btn-success" style="width: 100%;"><i class="fa fa-download"></i> Download PDF</a></div>
+                    <div class="col-6 col-lg-2"><a href="/ap/download/{{$advance_program->id}}}" class="btn btn btn-success" style="width: 100%;"><i class="fa fa-download"></i> Download PDF</a></div>
                     <div class="col-6 col-lg-2"><a class="btn btn btn-danger" style="width: 100%;"><i class="fa fa-file"></i> Download PDF</a></div>
                 </div>
                 @endif

@@ -195,6 +195,7 @@ class AdvanceProgramActionController extends Controller
 
         $advance_program = AdvanceProgram::where('id', $request->advance_program_id)->where('user', $user_id)->first();
         $advance_program->status = 'Submitted';
+        $advance_program->submitted_on = NOW();
         $advance_program->save();
 
         // Creating Note

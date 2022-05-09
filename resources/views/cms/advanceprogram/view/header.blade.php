@@ -12,7 +12,6 @@
     @endphp
 </p>
 @endif
-
 @if($advance_program->show_to)
 <p class="p-1 card-text">
     @php
